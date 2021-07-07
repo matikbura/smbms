@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper代理开发方法中，namespace属性值必须是mapper代理接口的全限定名称 -->
+<mapper namespace="cn.smbms.mapper.ProviderMapperHsz">
+    <!--模糊查询回收站表信息-->
+    <select id="getProviderList" parameterType="queryProviderHSZ" resultType="providerHsz">
+        select * from smbms_provider_hsz
+        <where>
+            <if test="queryProName!=null and queryProName!=''">
+                and proName like #{queryProName}
+            </if>
+            <if test="queryProCode!=null and queryProCode!=''">
+                and proCode like #{queryProCode}
+            </if>
+            <if test="queryMinDate!=null">
+                and deletetime &gt; #{queryMinDate}
+            </if>
+            <if test="queryMaxDate!=null">
+                and deletetime &lt; #{queryMaxDate}
+            </if>
+        </where>
+        limit #{start},#{pageSize}
+    </select>
+    <!--根据 id查询信息-->
+    <select id="getProviderHSZById" parameterType="int" resultType="ProviderHSZ">
+        select * from smbms_provider_hsz where id=#{id}
+    </select>
+    <!--根据 id删除信息-->
+    <delete id="deleteProviderById" parameterType="int">
+        delete from smbms_provider_hsz where id=#{id}
+    </delete>
+    <!--查询总条数-->
+    <select id="getUserCount" parameterType="queryProviderHSZ" resultType="integer">
+        select count(*) u from smbms_provider_hsz where 1=1
+            <if test="queryProName!=null and queryProName!=''">
+                and proName like #{queryProName}
+            </if>
+            <if test="queryProCode!=null and queryProCode!=''">
+                and proCode like #{queryProCode}
+            </if>
+            <if test="queryMinDate!=null">
+                and deletetime &gt; #{queryMinDate}
+            </if>
+            <if test="queryMaxDate!=null">
+                and deletetime &lt; #{queryMaxDate}
+            </if>
+    </select>
+    <!--增加信息-->
+    <insert id="addProviderHSZ" parameterType="ProviderHSZ">
+        insert smbms_provider_hsz (
+            id,
+            proCode,
+            proName,
+            proDesc,
+            proContact,
+            proPhone,
+            proAddress,
+            proFax,
+            createdBy,
+            creationDate,
+            modifyDate,
+            modifyBy,
+            deletetime
+        )
+        value (
+            null,
+            #{proCode},
+            #{proName},
+            #{proDesc},
+            #{proContact},
+            #{proPhone},
+            #{proAddress},
+            #{proFax},
+            #{createdBy},
+            #{creationDate},
+            #{modifyDate},
+            #{modifyBy},
+            #{deletetime}
+        )
+    </insert>
+</mapper>

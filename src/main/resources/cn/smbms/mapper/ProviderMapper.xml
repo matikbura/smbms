@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.mapper.ProviderMapper">
+    <insert id="add" parameterType="Provider" >
+        INSERT INTO smbms_provider
+VALUES
+	(
+		NULL,
+		#{proCode},
+		#{proName},
+		#{proDesc},
+		#{proContact},
+		#{proPhone},
+		#{proAddress},
+		#{proFax},
+		#{createdBy},
+		#{creationDate},
+		#{modifyDate},
+		#{modifyBy}
+	)
+    </insert>
+	<select id="getProviderList" parameterType="QueryProvider" resultType="Provider">
+		SELECT *FROM smbms_provider
+		<where>
+			<if test="queryProName!=null and queryProName!='' ">
+				AND proName LIKE #{queryProName}
+			</if>
+			<if test="queryProCode !=null and queryProCode!='' ">
+				AND proCode like #{queryProCode}
+			</if>
+		</where>
+		limit #{start},#{pageSize}
+	</select>
+<select id="getProviderCount" parameterType="QueryProvider" resultType="int">
+	SELECT COUNT(id)  FROM smbms_provider
+	<where>
+		<if test="queryProName!=null and queryProName!='' ">
+			AND proName LIKE #{queryProName}
+		</if>
+		<if test="queryProCode !=null and queryProCode!='' ">
+			AND proCode like #{queryProCode}
+		</if>
+	</where>
+
+</select>
+	<select id="getProviderById" parameterType="int" resultType="Provider">
+		SELECT *FROM smbms_provider WHERE id=#{id}
+	</select>
+
+	<update id="modify" parameterType="Provider">
+		UPDATE smbms_provider
+SET proName =#{proName}, proDesc =#{proDesc}, proContact =#{proContact}, proPhone =#{proPhone}, proAddress =#{proAddress}, proFax =#{proFax}, modifyBy =#{modifyBy}, modifyDate =#{modifyDate}
+WHERE
+	id = #{id}
+	</update>
+
+	<delete id="deleteProviderById" parameterType="int">
+		DELETE FROM smbms_provider WHERE id=#{id}
+	</delete>
+</mapper>

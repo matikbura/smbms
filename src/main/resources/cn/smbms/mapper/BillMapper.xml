@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.mapper.BillMapper">
+
+    <insert id="addBillByBillList" parameterType="list">
+        insert into smbms_bill
+    </insert>
+
+
+
+
+
+    <select id="getBillCountByProviderId" parameterType="int" resultType="int">
+        SELECT COUNT(1) FROM smbms_bill WHERE  providerId=#{providerId}
+    </select>
+
+
+
+
+
+    <!--抽取公共sql语句-->
+    <sql id="commonSelectBill">
+        SELECT
+            b.id,
+            b.billCode,
+            b.productName,
+            b.productDesc,
+            b.productUnit,
+            b.productCount,
+            b.totalPrice,
+            b.isPayment,
+            b.createdBy,
+            b.creationDate,
+            b.modifyBy,
+            b.modifyDate,
+            b.providerId
+        FROM
+            smbms_bill b
+    </sql>
+    <!--查询功能-->
+    <!--查询全部订单-->
+    <select id="getAllBill" parameterType="FuzzyQuery" resultType="Bill">
+        <include refid="commonSelectBill"></include>
+        <if test="currentPageNo!=null">
+            LIMIT #{currentPageNo} , #{pageSize}
+        </if>
+    </select>
+    <!--根据订单id查询-->
+    <select id="getBillById" parameterType="int" resultType="Bill">
+        <include refid="commonSelectBill"></include> WHERE id=#{id};
+    </select>
+    <!--查询供应商-->
+    <select id="getProviderIdAndName" resultType="Provider">
+        SELECT * FROM smbms_provider;
+    </select>
+    <!--模糊查询-->
+    <select id="getBillList" parameterType="FuzzyQuery" resultType="Bill">
+        <include refid="commonSelectBill"></include> WHERE 1=1
+
+        <if test="queryProductName!=null and queryProductName!=''">
+            AND productName LIKE CONCAT('%',#{queryProductName},'%')
+        </if>
+        <if test="queryIsPayment!=null and queryIsPayment!=0">
+            AND isPayment=#{queryIsPayment}
+        </if>
+        <if test="queryProviderId!=null and queryProviderId!=0">
+            AND providerId=#{queryProviderId}
+        </if>
+        <if test="currentPageNo!=null">
+            LIMIT #{currentPageNo} , #{pageSize}
+        </if>
+    </select>
+    <!--查询订单数量-->
+    <select id="getCountBill" parameterType="FuzzyQuery" resultType="int">
+        SELECT COUNT(*) FROM smbms_bill WHERE 1=1
+
+        <if test="queryProductName!=null and queryProductName!=''">
+            AND productName LIKE CONCAT('%',#{queryProductName},'%')
+        </if>
+        <if test="queryIsPayment!=null and queryIsPayment!=0">
+            AND isPayment=#{queryIsPayment}
+        </if>
+        <if test="queryProviderId!=null and queryProviderId!=0">
+            AND providerId=#{queryProviderId}
+        </if>
+    </select>
+    <!--添加-->
+    <insert id="add" parameterType="Bill">
+        insert into smbms_bill (billCode,productName,productDesc,
+                                productUnit,productCount,totalPrice,isPayment,providerId,createdBy,creationDate)
+        values(#{billCode},#{productName},#{productDesc},
+               #{productUnit},#{productCount},#{totalPrice},
+               #{isPayment},#{providerId},
+               #{createdBy},#{creationDate});
+    </insert>
+    <!--根据id删除-->
+    <delete id="deleteBillById" parameterType="int">
+        delete from smbms_bill where id=#{id};
+    </delete>
+    <update id="updateBill" parameterType="Bill">
+        update smbms_bill set productName=#{productName},
+                              productDesc=#{productDesc},productUnit=#{productUnit},productCount=#{productCount},
+                              totalPrice=#{totalPrice},
+                              isPayment=#{isPayment},providerId=#{providerId},modifyBy=#{modifyBy},
+                              modifyDate=#{modifyDate} where id = #{id}
+    </update>
+
+
+    <select id="getAllBillForExcel" resultType="bill">
+        select * from smbms_bill;
+    </select>
+
+
+    <!--联想查询-->
+    <select id="queryAllName" parameterType="String" resultType="Bill">
+    <include refid="commonSelectBill"></include> WHERE productName LIKE CONCAT('%',#{queryProductName},'%')
+    </select>
+</mapper>

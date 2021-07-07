@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--开启service包扫描   明天这里主要配置事务 声明式事务 利用aop配置-->
+    <context:component-scan base-package="cn.smbms.service"/>
+
+    <!-- 配置事务-->
+    <!-- 平台事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据源-->
+        <property name="dataSource" ref="druidDs"/>
+    </bean>
+
+    <!--配置事务通知-->
+    <tx:advice id="myTx" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="modify" propagation="REQUIRED" read-only="false"/>
+            <tx:method name="add*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="delete" propagation="REQUIRED" read-only="false"/>
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="query" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--配置切面    -->
+    <aop:config>
+    <!--    配置切入点-->
+    <aop:pointcut id="tx1" expression="execution(* cn.smbms.service.*.*(..))"/>
+    <!--    事务切面-->
+    <aop:advisor advice-ref="myTx" pointcut-ref="tx1"/>
+    </aop:config>
+
+</beans>
